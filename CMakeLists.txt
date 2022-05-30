@@ -30,3 +30,7 @@ gtest_discover_tests(test_small_vector)
 add_executable(test_static_vector test/test_static_vector.cpp)
 target_link_libraries(test_static_vector hdlib gtest_main)
 gtest_discover_tests(test_static_vector)
+
+add_executable(test_timeit test/test_timeit.cpp)
+target_link_libraries(test_timeit hdlib gtest_main)
+gtest_discover_tests(test_timeit)
