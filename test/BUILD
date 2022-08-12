@@ -5,7 +5,8 @@ cc_test(
         "test_ordered_vector.cpp",
         "test_small_vector.cpp",
         "test_static_vector.cpp",
-        "test_timeit.cpp",
+        "test_string_utils.cpp",
+        #"test_timeit.cpp",
     ],
     deps = [
         "//:hdlib",
