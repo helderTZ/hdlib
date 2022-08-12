@@ -1,9 +1,9 @@
-#include "gtest/gtest.h"
 #include "timeit.h"
 
-#include <iostream>
+#include <stdio.h>
+#include <unistd.h>
 
-TEST(timeit, sleep1s) {
+int main() {
     auto ns = hd::timeit([](){ sleep(1); });
-    std::cout << "sleep(1) took " << ns.count();
+    printf("sleep(1) took %f s\n", ns / 1.0e9);
 }
