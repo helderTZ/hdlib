@@ -1,8 +1,8 @@
 cc_library(
     name = "hdlib",
-    srcs = [
-        "include/ordered_vector.h",
-    ],
+    srcs = glob(["include/*.h"]),
     includes = ["include"],
+    copts = ["--std=c++17"],
     visibility = ["//visibility:public"],
 )
+
