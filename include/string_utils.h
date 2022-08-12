@@ -18,6 +18,21 @@ bool has_whitespace(std::string_view str) {
     );
 }
 
+bool is_alphanumeric(std::string_view str) {
+    return std::all_of(
+        str.begin(),
+        str.end(),
+        [](char c) {
+            bool is_alpha_upper = c >= 'A' && c <= 'Z';
+            bool is_alpha_lower = c >= 'a' && c <= 'z';
+            bool is_digit = c >= '0' && c <= '9';
+            return is_alpha_lower
+                || is_alpha_upper
+                || is_digit;
+        }
+    );
+}
+
 bool is_palindrome(std::string_view word) {
     size_t len = word.size();
     for (size_t i = 0; i < len / 2; ++i) {

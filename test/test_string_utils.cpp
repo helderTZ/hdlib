@@ -10,6 +10,11 @@ TEST(string_utils, has_whitespace) {
     EXPECT_TRUE(has_whitespace("has whitespace"));
 }
 
+TEST(string_utils, is_alphanumeric) {
+    EXPECT_FALSE(is_alphanumeric("not alphanumeric!"));
+    EXPECT_TRUE(is_alphanumeric("iamalphanumeric21"));
+}
+
 TEST(string_utils, is_palindrome) {    
     EXPECT_FALSE(is_palindrome("RAFT"));
     EXPECT_FALSE(is_palindrome("BORAT"));
