@@ -24,5 +24,6 @@ TEST(string_utils, is_palindrome) {
 
 TEST(string_utils, is_anagram) {
     EXPECT_FALSE(is_anagram("BLAH", "BLEH"));
+    EXPECT_FALSE(is_anagram("DEBITCARD", "BAQCREDIT"));
     EXPECT_TRUE(is_anagram("DEBITCARD", "BADCREDIT"));
 }

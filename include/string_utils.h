@@ -49,20 +49,27 @@ bool is_anagram(std::string_view word1, std::string_view word2) {
         return false;
     }
 
-    std::stack<char> letters;
+    std::stack<char> letters1;
+    std::vector<char> letters2;
     std::for_each(word1.begin(), word1.end(),
-        [&](char c) { letters.push(c); }
+        [&](char c) { letters1.push(c); }
+    );
+    std::for_each(word2.begin(), word2.end(),
+        [&](char c) { letters2.push_back(c); }
     );
 
     for (size_t i = 0; i < word1.size(); ++i) {
-        char ch = letters.top();
-        letters.pop();
-        if (word2.find(ch) == std::string_view::npos) {
+        char ch = letters1.top();
+        letters1.pop();
+        auto it = find(letters2.begin(), letters2.end(), ch);
+        if (it == letters2.end()) {
             return false;
+        } else {
+            letters2.erase(it);
         }
     }
 
-    return letters.size() == 0;
+    return letters1.size() == 0;
 }
 
 }   // namespace hd
