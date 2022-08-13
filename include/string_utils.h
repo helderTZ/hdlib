@@ -3,6 +3,7 @@
 #include <string>
 #include <string_view>
 #include <stack>
+#include <list>
 
 namespace hd {
 
@@ -50,7 +51,7 @@ bool is_anagram(std::string_view word1, std::string_view word2) {
     }
 
     std::stack<char> letters1;
-    std::vector<char> letters2;
+    std::list<char> letters2;
     std::for_each(word1.begin(), word1.end(),
         [&](char c) { letters1.push(c); }
     );
