@@ -11,7 +11,19 @@ cc_test(
         "//:hdlib",
         "@googletest//:gtest_main",
     ],
-    copts = ["--std=c++17"],
+    visibility = ["//visibility:public"],
+)
+
+cc_test(
+    name = "test_algorithm",
+    size = "small",
+    srcs = [
+        "test_algorithm.cpp",
+    ],
+    deps = [
+        "//:hdlib",
+        "@googletest//:gtest_main",
+    ],
     visibility = ["//visibility:public"],
 )
 
@@ -23,6 +35,5 @@ cc_binary(
     deps = [
         "//:hdlib",
     ],
-    copts = ["--std=c++17"],
     visibility = ["//visibility:public"],
 )

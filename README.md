@@ -25,3 +25,7 @@ Using Bazel:
 ```console
 $ bazel build //:hdlib
 ```
+
+## TODO
+
+- bloom filter
