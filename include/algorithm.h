@@ -86,6 +86,11 @@ void fft(std::complex<T>* out, std::complex<T>* in, size_t n, size_t stride=1) {
     }
 }
 
+template<typename T>
+typename T::value_type last(const T& container) {
+    return *std::prev(container.end());
+}
+
 // TODO
 // auto enumerate(const auto& data) {
 //     return [i=0](const auto& value) mutable {

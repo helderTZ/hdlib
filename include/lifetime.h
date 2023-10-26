@@ -7,10 +7,11 @@
 namespace hd {
 
 class ObjLifetimeInspector {
+public:
     static unsigned int id;
     std::string name;
     unsigned int owned_id;
-public:
+
     ObjLifetimeInspector() : name(""), owned_id(id++){
         printf("No-arg constructor called, '%s', id: %u\n",
             name.c_str(), owned_id);
