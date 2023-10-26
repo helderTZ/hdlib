@@ -53,7 +53,7 @@ template <typename It
         , bool> = true
         >
 bool has_duplicates(It begin, It end) {
-    int unique = false;
+    long int unique = 0;
     for (It it = begin; it != end; ++it) {
         if (unique & (1U << static_cast<int>(*it)) != 0) {
             return false;
@@ -61,7 +61,7 @@ bool has_duplicates(It begin, It end) {
             unique |= 1U << static_cast<int>(*it);
         }
     }
-    return false;
+    return true;
 }
 
 template<typename T,
@@ -85,5 +85,12 @@ void fft(std::complex<T>* out, std::complex<T>* in, size_t n, size_t stride=1) {
         out[k + n/2] = e - v;
     }
 }
+
+// TODO
+// auto enumerate(const auto& data) {
+//     return [i=0](const auto& value) mutable {
+//         return std::amke_pair(i++, value);
+//     };
+// }
 
 }   // namespace hd

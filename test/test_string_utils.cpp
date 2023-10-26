@@ -27,3 +27,15 @@ TEST(string_utils, is_anagram) {
     EXPECT_FALSE(is_anagram("DEBITCARD", "BAQCREDIT"));
     EXPECT_TRUE(is_anagram("DEBITCARD", "BADCREDIT"));
 }
+
+TEST(string_utils, to_upper) {
+    std::string uut = "Hello There";
+    to_upper(uut);
+    EXPECT_STREQ(uut.c_str(), "HELLO THERE");
+}
+
+TEST(string_utils, to_lower) {
+    std::string uut = "Hello There";
+    to_lower(uut);
+    EXPECT_STREQ(uut.c_str(), "hello there");
+}

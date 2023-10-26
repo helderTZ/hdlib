@@ -13,6 +13,7 @@ bool has_whitespace(std::string_view str) {
         str.end(),
         [](char c) {
             return c == ' '
+                || c == '\t'
                 || c == '\n'
                 || c == '\r';
         }
@@ -71,6 +72,16 @@ bool is_anagram(std::string_view word1, std::string_view word2) {
     }
 
     return letters1.size() == 0;
+}
+
+void to_lower(std::string& str) {
+    std::transform(str.begin(), str.end(), str.begin(),
+        [&](char c) {return std::tolower(c); });
+}
+
+void to_upper(std::string& str) {
+    std::transform(str.begin(), str.end(), str.begin(),
+        [&](char c) { return std::toupper(c); });
 }
 
 }   // namespace hd

@@ -27,6 +27,19 @@ cc_test(
     visibility = ["//visibility:public"],
 )
 
+cc_test(
+    name = "test_string_utils",
+    size = "small",
+    srcs = [
+        "test_string_utils.cpp",
+    ],
+    deps = [
+        "//:hdlib",
+        "@googletest//:gtest_main",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 cc_binary(
     name = "test_timeit",
     srcs = [

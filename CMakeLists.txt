@@ -38,3 +38,7 @@ gtest_discover_tests(test_timeit)
 add_executable(test_string_utils test/test_string_utils.cpp)
 target_link_libraries(test_string_utils hdlib gtest_main)
 gtest_discover_tests(test_string_utils)
+
+add_executable(test_algorithm test/test_algorithm.cpp)
+target_link_libraries(test_algorithm hdlib gtest_main)
+gtest_discover_tests(test_algorithm)

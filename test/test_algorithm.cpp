@@ -6,7 +6,7 @@
 using namespace hd;
 
 enum UUT {
-    ONE,
+    ONE=1,
     TWO,
     THREE,
 };
@@ -18,6 +18,17 @@ TEST(has_duplicates, has_duplicates) {
     uut.push_back(TWO);
     uut.push_back(THREE);
     uut.push_back(ONE);
+
+    ASSERT_TRUE(has_duplicates(uut.begin(), uut.end()));
+}
+
+TEST(has_duplicates, has_duplicates_int) {
+    std::vector<int> uut;
+
+    uut.push_back(1);
+    uut.push_back(2);
+    uut.push_back(3);
+    uut.push_back(1);
 
     ASSERT_TRUE(has_duplicates(uut.begin(), uut.end()));
 }
