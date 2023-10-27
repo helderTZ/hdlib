@@ -88,11 +88,11 @@ void fft(std::complex<T>* out, std::complex<T>* in, size_t n, size_t stride=1) {
 }
 
 template<typename T>
-typename T::value_type* last(T& container) {
+typename T::value_type& last(T& container) {
     if (container.size() < 1) {
         throw std::out_of_range("container is empty");
     }
-    return &*std::prev(container.end());
+    return *std::prev(container.end());
 }
 
 // TODO

@@ -50,7 +50,7 @@ TEST(last, works_for_pod) {
     uut.push_back(2);
     uut.push_back(3);
 
-    ASSERT_EQ(3, *last(uut));
+    ASSERT_EQ(3, last(uut));
 }
 
 TEST(last, works_for_pointers) {
@@ -61,8 +61,8 @@ TEST(last, works_for_pointers) {
     uut.push_back(&arr[1]);
     uut.push_back(&arr[2]);
 
-    ASSERT_EQ(&arr[2], *last(uut));
-    ASSERT_EQ(arr[2], **last(uut));
+    ASSERT_EQ(&arr[2], last(uut));
+    ASSERT_EQ(arr[2], *last(uut));
 }
 
 #include "lifetime.h"
@@ -74,14 +74,11 @@ TEST(last, check_for_unnecessary_copies) {
                     // which would cause an extra copy (the creation of the objwct
                     // and the copy/move to the new location)
 
-    // need emplace_back with no args so it default-constructs the object in place
-    uut.emplace_back();
-    uut.emplace_back();
-    uut.emplace_back();
+    uut.emplace_back("a");
+    uut.emplace_back("b");
+    uut.emplace_back("c");
 
-    //TODO: last() is not triggering an extra copy because it is returning a pointer
-    //      if changed to return a reference, it can trigger RVO and avoid the cpoy of the pojnter
-    auto* _ = last(uut);
+    auto& _ = last(uut);
 
     ASSERT_EQ(3, ObjLifetimeInspector::id);
 }
