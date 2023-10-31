@@ -40,6 +40,19 @@ cc_test(
     visibility = ["//visibility:public"],
 )
 
+cc_test(
+    name = "test_channel",
+    size = "small",
+    srcs = [
+        "test_channel.cpp",
+    ],
+    deps = [
+        "//:hdlib",
+        "@googletest//:gtest_main",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 cc_binary(
     name = "test_timeit",
     srcs = [

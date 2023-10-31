@@ -65,6 +65,8 @@ bool has_duplicates(It begin, It end) {
     return true;
 }
 
+// Adapted from: Rosetta code FFT python recursive impl
+// https://rosettacode.org/wiki/Fast_Fourier_transform#Python
 template<typename T,
     std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
 void fft(std::complex<T>* out, std::complex<T>* in, size_t n, size_t stride=1) {
@@ -98,8 +100,12 @@ typename T::value_type& last(T& container) {
 // TODO
 // auto enumerate(const auto& data) {
 //     return [i=0](const auto& value) mutable {
-//         return std::amke_pair(i++, value);
+//         return std::make_pair(i++, value);
 //     };
 // }
+
+// TODO
+// https://stackoverflow.com/a/46282024/13499951
+// a tiny simple range library
 
 }   // namespace hd

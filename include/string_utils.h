@@ -84,4 +84,6 @@ void to_upper(std::string& str) {
         [&](char c) { return std::toupper(c); });
 }
 
+//TODO: implement Levenshtein distance
+
 }   // namespace hd

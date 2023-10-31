@@ -42,3 +42,7 @@ gtest_discover_tests(test_string_utils)
 add_executable(test_algorithm test/test_algorithm.cpp)
 target_link_libraries(test_algorithm hdlib gtest_main)
 gtest_discover_tests(test_algorithm)
+
+add_executable(test_channel test/test_channel.cpp)
+target_link_libraries(test_channel hdlib gtest_main)
+gtest_discover_tests(test_channel)
