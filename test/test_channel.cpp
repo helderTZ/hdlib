@@ -11,13 +11,13 @@ TEST(channel, send_recv) {
     std::vector<int> values;
     auto [tx, rx] = make_channel<int>();
 
-    std::thread t1([&](Channel<int> tx) {
+    std::thread t1([&](decltype(tx) tx) {
         for (int i = 0; i < 100; ++i) {
             tx.send(i);
         }
     }, std::move(tx));
 
-    std::thread t2([&](Channel<int> rx) {
+    std::thread t2([&](decltype(rx) rx) {
         for (int i = 0; i < 100; ++i) {
             values.push_back(std::move(*rx.recv()));
         }
