@@ -32,7 +32,8 @@ TEST(channel, send_recv) {
     }
 }
 
-TEST(channel, DISABLED_send_recv_mpsc) {
+TEST(channel, send_recv_mpsc) {
+    std::vector<std::thread> threads;
     std::set<int> values;
     auto [tx, rx] = make_mpsc<int>();
 
@@ -50,20 +51,19 @@ TEST(channel, DISABLED_send_recv_mpsc) {
         }
     };
 
-    std::thread t1(sender, std::move(tx.copy()), 0);
-    std::thread t2(sender, std::move(tx.copy()), 100);
-    std::thread t3(receiver, std::move(rx));
-
-    t1.join();
-    t2.join();
-    t3.join();
-
-    for (int i = 0; i < 200; ++i) {
-        printf("%d ", *values.find(i));
+    for (int i = 0; i < 10; ++i) {
+        threads.push_back(
+            std::thread(sender, std::move(tx.copy()), i*100)
+        );
     }
-    printf("\n");
+    std::thread receiver_thread(receiver, std::move(rx));
 
-    for (int i = 0; i < 200; ++i) {
+    for (int i = 0; i < 10; ++i) {
+        threads[i].join();
+    }
+    receiver_thread.join();
+
+    for (int i = 0; i < 1000; ++i) {
         ASSERT_EQ(*values.find(i), i);
     }
 }

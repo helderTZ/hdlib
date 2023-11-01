@@ -40,7 +40,7 @@ namespace impl {
         // std::condition_variable_any cv;
         std::mutex mtx;
         std::condition_variable cv;
-        int producers = 1;
+        int producers = 0;
         bool closed = false;
     };
 };
@@ -148,21 +148,32 @@ private:
     std::shared_ptr<impl::State<T>> state;
 };
 
-
-//FIXME: mpsc wip
 template<typename T>
 class MpscChannelTx {
 public:
     MpscChannelTx(MpscChannelTx& other) {
+        std::scoped_lock lock{other.state->mtx};
         state = other.state;
         state->producers++;
     }
+
     MpscChannelTx(MpscChannelTx&&) = default;
+
     MpscChannelTx& operator=(MpscChannelTx& other) {
-        state = other.state;
-        state->producers++;
+        {
+            std::scoped_lock lock{other.state->mtx};
+            state = other.state;
+            state->producers++;
+        }
+        return *this;
     }
+
     MpscChannelTx& operator=(MpscChannelTx&&) = default;
+
+    MpscChannelTx<T> copy() {
+        MpscChannelTx<T> tx{*this};
+        return tx;
+    }
 
     ~MpscChannelTx() { close(); }
 
@@ -185,22 +196,15 @@ public:
         if (!state) return false;
 
         std::unique_lock lock{state->mtx};
-        --state->producers;
-        state->cv.wait(lock,
-            [this](){ return state->producers == 0 || state->closed; });
 
         if (state->closed) return false;
 
-        if (state->producers == 0) {
+        state->producers--;
+        if (state->producers <= 0) {
             state->closed = true;
+            state->cv.notify_all();
         }
-        state->cv.notify_all();
         return true;
-    }
-
-    MpscChannelTx<T> copy() {
-        MpscChannelTx<T> tx{this->state};
-        return tx;
     }
 
 private:
