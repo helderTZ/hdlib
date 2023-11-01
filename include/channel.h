@@ -36,8 +36,6 @@ namespace impl {
     template<typename T>
     struct MpcsState {
         std::queue<T> queue;
-        // std::shared_mutex mtx;
-        // std::condition_variable_any cv;
         std::mutex mtx;
         std::condition_variable cv;
         int producers = 0;
@@ -57,6 +55,7 @@ template<typename T>
 std::pair<MpscChannelTx<T>, MpscChannelRx<T>> make_mpsc() {
     auto ptr = std::make_shared<impl::MpcsState<T>>();
     MpscChannelTx<T> sender{ptr};
+    // ptr->producers++;
     MpscChannelRx<T> receiver{std::move(ptr)};
     return std::make_pair(std::move(sender), std::move(receiver));
 }

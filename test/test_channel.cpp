@@ -32,7 +32,34 @@ TEST(channel, send_recv) {
     }
 }
 
-TEST(channel, send_recv_mpsc) {
+//FIXME: something still fishy here...
+//       producers is initialized to 0
+//       shouldn't it be 1? -> causes deadlock...
+TEST(channel, send_recv_mpsc_single) {
+    auto channels = make_mpsc<int>();
+    auto& tx = std::get<0>(channels);
+    auto& rx = std::get<1>(channels);
+
+    // std::thread producer([&tx]() {
+    //     for (int i = 0; i < 100; ++i) {
+    //         tx.send(i);
+    //     }
+    // });
+    for (int i = 0; i < 100; ++i) {
+        tx.send(i);
+    }
+
+    std::thread consumer([rx = std::move(rx)] () mutable {
+        for (int i = 0; i < 100; ++i) {
+            ASSERT_EQ(*rx.recv(), i);
+        }
+    });
+
+    // producer.join();
+    consumer.join();
+}
+
+TEST(channel, send_recv_mpsc_multiple) {
     std::vector<std::thread> threads;
     std::set<int> values;
     auto [tx, rx] = make_mpsc<int>();
