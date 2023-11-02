@@ -39,3 +39,14 @@ TEST(string_utils, to_lower) {
     to_lower(uut);
     EXPECT_STREQ(uut.c_str(), "hello there");
 }
+
+TEST(string_utils, ends_with) {
+    EXPECT_TRUE(ends_with("some_file.cpp", ".cpp"));
+    EXPECT_FALSE(ends_with("some_file.cpp", ".h"));
+}
+
+TEST(string_utils, contains) {
+    EXPECT_TRUE(contains("some_file.cpp", ".cpp"));
+    EXPECT_FALSE(contains("some_file.cpp", ".h"));
+    EXPECT_FALSE(contains(".cpp", "longname.cpp"));
+}

@@ -84,6 +84,15 @@ void to_upper(std::string& str) {
         [&](char c) { return std::toupper(c); });
 }
 
+bool ends_with(std::string_view src, std::string_view ending) {
+    if (src.size() < ending.size()) return false;
+    return src.substr(src.size()-ending.size()) == ending;
+}
+
+bool contains(std::string_view container, std::string_view containee) {
+    return container.find(containee) != std::string::npos;
+}
+
 //TODO: implement Levenshtein distance
 
 }   // namespace hd
