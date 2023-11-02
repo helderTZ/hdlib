@@ -40,6 +40,11 @@ TEST(string_utils, to_lower) {
     EXPECT_STREQ(uut.c_str(), "hello there");
 }
 
+TEST(string_utils, starts_with) {
+    EXPECT_TRUE(starts_with("some_file.cpp", "some"));
+    EXPECT_FALSE(starts_with("some_file.cpp", ".cpp"));
+}
+
 TEST(string_utils, ends_with) {
     EXPECT_TRUE(ends_with("some_file.cpp", ".cpp"));
     EXPECT_FALSE(ends_with("some_file.cpp", ".h"));

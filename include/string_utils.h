@@ -84,6 +84,10 @@ void to_upper(std::string& str) {
         [&](char c) { return std::toupper(c); });
 }
 
+bool starts_with(std::string_view src, std::string_view start) {
+    return src.find(start) == 0;
+}
+
 bool ends_with(std::string_view src, std::string_view ending) {
     if (src.size() < ending.size()) return false;
     return src.substr(src.size()-ending.size()) == ending;
