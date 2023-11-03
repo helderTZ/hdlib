@@ -84,3 +84,46 @@ TEST(last, check_for_unnecessary_copies) {
 
     ASSERT_EQ(3, ObjLifetimeInspector::id);
 }
+
+TEST(enumerate, it_works) {
+    std::vector<std::string> uut;
+    uut.push_back("one");
+    uut.push_back("two");
+    uut.push_back("three");
+
+    // From: http://antonym.org/2014/02/c-plus-plus-11-range-based-for-loops.html
+    // for ( range_declaration : range_expression ) loop_statement
+    // this loop is equivalent to the following expanded code:
+    // {
+    //     auto && __range = range_expression;
+    //     for (auto __begin = __range.begin(),
+    //         __end = __range.end();
+    //         __begin != __end; ++__begin)
+    //     {
+    //         range_declaration = *__begin;
+    //         loop_statement
+    //     }
+    // }
+
+    size_t j = 0;
+    {
+        auto __range = enumerate(uut);
+        for (auto __begin = __range.begin(), __end = __range.end(); __begin != __end; ++__begin) {
+            auto a = *__begin;
+            auto index = std::get<0>(a);
+            auto str = std::get<1>(a);
+            {
+                EXPECT_EQ(index, j);
+                EXPECT_EQ(str, uut[j]);
+                j++;
+            }
+        }
+    }
+
+    j = 0;
+    for (auto [i, str] : enumerate(uut)) {
+        EXPECT_EQ(i, j);
+        EXPECT_EQ(str, uut[j]);
+        j++;
+    }
+}

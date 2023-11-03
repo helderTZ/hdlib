@@ -97,12 +97,55 @@ typename T::value_type& last(T& container) {
     return *std::prev(container.end());
 }
 
-// TODO
-// auto enumerate(const auto& data) {
-//     return [i=0](const auto& value) mutable {
-//         return std::make_pair(i++, value);
-//     };
-// }
+template<typename T>
+class enumerate_iterator;
+
+template<typename T>
+enumerate_iterator<T> enumerate(const T& data);
+
+template<typename T>
+class enumerate_iterator {
+private:
+    const T& container;
+    typename T::const_iterator iterator;
+    size_t index;
+
+    enumerate_iterator(const T& container, typename T::const_iterator iterator, size_t index)
+        : container(container), iterator(iterator), index(index) {}
+
+    friend enumerate_iterator<T> enumerate<T>(const T& data);
+
+public:
+    // enumerate_iterator(const enumerate_iterator&) = default;
+    // enumerate_iterator(enumerate_iterator&&) = default;
+    // enumerate_iterator operator=(const enumerate_iterator&) = default;
+    // enumerate_iterator operator=(enumerate_iterator&&) = default;
+
+    enumerate_iterator begin() { return enumerate_iterator{container, container.begin(), 0}; }
+    enumerate_iterator end() { return enumerate_iterator{container, container.end(), container.size()}; }
+    void next() { iterator = std::next(iterator); ++index; }
+    void prev() { iterator = std::prev(iterator); --index; }
+
+    void operator++() { next(); }
+    void operator--() { prev(); }
+
+    bool operator==(const enumerate_iterator& other) {
+        return other.iterator == iterator && other.index == index;
+    }
+
+    bool operator!=(const enumerate_iterator& other) {
+        return !(*this == other);
+    }
+
+    std::pair<size_t, typename T::value_type> operator*() {
+        return std::make_pair(index, *iterator);
+    }
+};
+
+template<typename T>
+enumerate_iterator<T> enumerate(const T& data) {
+    return enumerate_iterator{data, data.begin(), static_cast<size_t>(0)};
+}
 
 // TODO
 // https://stackoverflow.com/a/46282024/13499951
