@@ -147,6 +147,14 @@ enumerate_iterator<T> enumerate(const T& data) {
     return enumerate_iterator{data, data.begin(), static_cast<size_t>(0)};
 }
 
+// Adapted from https://stackoverflow.com/a/66146159/13499951
+template<typename T,
+         std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
+constexpr size_t ceil(T value) {
+    const int64_t integer = static_cast<int64_t>(value);
+    return value > integer ? integer+1 : integer;
+}
+
 // TODO
 // https://stackoverflow.com/a/46282024/13499951
 // a tiny simple range library

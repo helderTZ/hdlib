@@ -127,3 +127,9 @@ TEST(enumerate, it_works) {
         j++;
     }
 }
+
+TEST(ceil, constexpr_ceil) {
+    static_assert(hd::ceil(4.0 / 8) == 1);
+    static_assert(hd::ceil(8.0 / 8) == 1);
+    static_assert(hd::ceil(9.0 / 8) == 2);
+}
