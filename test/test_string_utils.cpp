@@ -55,3 +55,11 @@ TEST(string_utils, contains) {
     EXPECT_FALSE(contains("some_file.cpp", ".h"));
     EXPECT_FALSE(contains(".cpp", "longname.cpp"));
 }
+
+TEST(string_utils, lev) {
+    EXPECT_EQ(lev("add", "daddy"), 2);
+    EXPECT_EQ(lev("", "foo"), 3);
+    EXPECT_EQ(lev("foo", ""), 3);
+    EXPECT_EQ(lev("foo", "bar"), 3);
+    EXPECT_EQ(lev("", ""), 0);
+}
