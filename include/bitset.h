@@ -17,7 +17,7 @@ constexpr size_t ceil(T value) {
 template<size_t N>
 class bitset {
 private:
-    std::array<uint8_t, ceil(static_cast<float>(N) / sizeof(uint8_t))> bytes;
+    std::array<uint8_t, ceil(static_cast<float>(N) / (sizeof(uint8_t)*8))> bytes;
 
     enum BIT_POSITION : uint8_t {
         ZERO  = 1U << 0U,
@@ -33,40 +33,67 @@ private:
 public:
     bitset() {}
 
-    //FIXME
     bitset(uint8_t bits) {
         bytes[0] = bits;
     }
 
+    //FIXME
     bitset(uint16_t bits) {
-        bytes[0] = static_cast<uint8_t>((bits && 0x00FF) >> 0);
-        bytes[1] = static_cast<uint8_t>((bits && 0xFF00) >> 8);
+        static_assert(N >= 16);
+        bytes[0] = static_cast<uint8_t>((bits & 0x00FF) >> 0);
+        bytes[1] = static_cast<uint8_t>((bits & 0xFF00) >> 8);
     }
 
+    //FIXME
     bitset(uint32_t bits) {
-        bytes[0] = static_cast<uint8_t>((bits && 0x000000FF) >> 0);
-        bytes[1] = static_cast<uint8_t>((bits && 0x0000FF00) >> 8);
-        bytes[2] = static_cast<uint8_t>((bits && 0x00FF0000) >> 16);
-        bytes[3] = static_cast<uint8_t>((bits && 0xFF000000) >> 24);
+        static_assert(N >= 32);
+        bytes[0] = static_cast<uint8_t>((bits & 0x000000FF) >> 0);
+        bytes[1] = static_cast<uint8_t>((bits & 0x0000FF00) >> 8);
+        bytes[2] = static_cast<uint8_t>((bits & 0x00FF0000) >> 16);
+        bytes[3] = static_cast<uint8_t>((bits & 0xFF000000) >> 24);
     }
 
+    //FIXME
     bitset(uint64_t bits) {
-        bytes[0] = static_cast<uint8_t>((bits && 0x00000000000000FF) >> 0);
-        bytes[1] = static_cast<uint8_t>((bits && 0x000000000000FF00) >> 8);
-        bytes[2] = static_cast<uint8_t>((bits && 0x0000000000FF0000) >> 16);
-        bytes[3] = static_cast<uint8_t>((bits && 0x00000000FF000000) >> 24);
-        bytes[4] = static_cast<uint8_t>((bits && 0x000000FF00000000) >> 32);
-        bytes[5] = static_cast<uint8_t>((bits && 0x0000FF0000000000) >> 40);
-        bytes[6] = static_cast<uint8_t>((bits && 0x00FF000000000000) >> 48);
-        bytes[7] = static_cast<uint8_t>((bits && 0xFF00000000000000) >> 56);
+        static_assert(N >= 64);
+        bytes[0] = static_cast<uint8_t>((bits & 0x00000000000000FF) >> 0);
+        bytes[1] = static_cast<uint8_t>((bits & 0x000000000000FF00) >> 8);
+        bytes[2] = static_cast<uint8_t>((bits & 0x0000000000FF0000) >> 16);
+        bytes[3] = static_cast<uint8_t>((bits & 0x00000000FF000000) >> 24);
+        bytes[4] = static_cast<uint8_t>((bits & 0x000000FF00000000) >> 32);
+        bytes[5] = static_cast<uint8_t>((bits & 0x0000FF0000000000) >> 40);
+        bytes[6] = static_cast<uint8_t>((bits & 0x00FF000000000000) >> 48);
+        bytes[7] = static_cast<uint8_t>((bits & 0xFF00000000000000) >> 56);
     }
 
-    //TODO
+    //FIXME
     bitset(const char* str) {
-        char* c = str;
-        while (*c != '\0') {
-            assert(*c == '1' || *c == '0');
-
+        const char* c = str;
+        size_t idx = 0;
+        size_t bit_idx = 0;
+        size_t byte_idx = 0;
+        while (*c != '\0' && idx < N) {
+            uint8_t byte = 0;
+            for (int b = 0; b < 8 && *c != '\0' && idx < N; ++b) {
+                assert(*c == '1' || *c == '0');
+                bit_idx = idx % 8; 
+                byte_idx = idx / 8;
+                if (*c == '1') {
+                    switch (bit_idx) {
+                        case 0: byte = ZERO; break;
+                        case 1: byte = ONE; break;
+                        case 2: byte = TWO; break;
+                        case 3: byte = THREE; break;
+                        case 4: byte = FOUR; break;
+                        case 5: byte = FIVE; break;
+                        case 6: byte = SIX; break;
+                        case 7: byte = SEVEN; break;
+                    }
+                }
+                c++;
+                idx++;
+            }
+            bytes[byte_idx] = byte;
         }
     }
 
@@ -151,25 +178,35 @@ public:
         }
     }
 
-    // FIXME
-    void print() const {
-        printf("0b");
-        uint8_t const* ptr = bytes.data();
-        uint8_t byte;
+    std::string to_string() const {
+        std::string repr;
+        size_t bit_idx = 0;
         for (size_t i = 0; i < bytes.size(); ++i) {
-            for (size_t j = 0; j < 8 && i*j < N; ++j) {
-                byte = ptr[i] >> j;
-                printf("%u", byte);
+            uint8_t byte = bytes[i];
+            for (size_t j = 0; bit_idx < N; ++j) {
+                repr += std::to_string(byte % 2);
+                byte /= 2;
+                bit_idx++;
             }
         }
-        printf("\n");
+
+        // reverse string so bits are in MSB -> LSB order
+        for (size_t i = 0; i < repr.size()/2; ++i) {
+            std::swap(repr[i], repr[repr.size()-1-i]);
+        }
+
+        return "0b" + repr;
     }
 
-    size_t size() {
+    size_t size_bits() {
         return N;
     }
 
-    size_t size_in_memory() {
+    size_t size_in_memory_bits() {
+        return bytes.size()*8;
+    }
+
+    size_t size_bytes_underlying() {
         return bytes.size();
     }
 
