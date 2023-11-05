@@ -47,7 +47,7 @@ public:
         name = std::move(other.name);
         owned_id = id++;
         printf("Move assignment operator called for '%s', id: %u\n",
-            name.c_str()), owned_id;
+            name.c_str(), owned_id);
         return *this;
     }
 };

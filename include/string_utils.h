@@ -98,14 +98,20 @@ bool contains(std::string_view container, std::string_view containee) {
     return container.find(containee) != std::string::npos;
 }
 
+void reverse(std::string& str) {
+    for (size_t i = 0; i < str.size()/2; ++i) {
+        std::swap(str[i], str[str.size()-1-i]);
+    }
+}
+
 size_t lev(std::string_view str1, std::string_view str2) {
     size_t n1 = str1.size()+1;
     size_t n2 = str2.size()+1;
     size_t table[n1][n2];
 
     // initialize first row and first column
-    for (int i = 0; i < n1; ++i) { table[i][0] = i; }
-    for (int i = 0; i < n2; ++i) { table[0][i] = i; }
+    for (size_t i = 0; i < n1; ++i) { table[i][0] = i; }
+    for (size_t i = 0; i < n2; ++i) { table[0][i] = i; }
 
     // calculate the rest of the matrix
     for (size_t row = 1; row < n1; ++row) {

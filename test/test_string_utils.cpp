@@ -56,6 +56,21 @@ TEST(string_utils, contains) {
     EXPECT_FALSE(contains(".cpp", "longname.cpp"));
 }
 
+TEST(string_utils, reverse) {
+    std::string uut0 = "";
+    std::string uut1 = "a";
+    std::string uut2 = "reverse me";
+    std::string uut3 = "reverse me!";
+    reverse(uut0);
+    reverse(uut1);
+    reverse(uut2);
+    reverse(uut3);
+    EXPECT_EQ(uut0, std::string(""));
+    EXPECT_EQ(uut1, std::string("a"));
+    EXPECT_EQ(uut2, std::string("em esrever"));
+    EXPECT_EQ(uut3, std::string("!em esrever"));
+}
+
 TEST(string_utils, lev) {
     EXPECT_EQ(lev("add", "daddy"), 2);
     EXPECT_EQ(lev("", "foo"), 3);
