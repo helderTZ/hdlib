@@ -31,20 +31,20 @@ private:
     };
 
 public:
-    bitset() {}
+    bitset() {
+        std::fill(bytes.begin(), bytes.end(), 0);
+    }
 
     bitset(uint8_t bits) {
         bytes[0] = bits;
     }
 
-    //FIXME
     bitset(uint16_t bits) {
         static_assert(N >= 16);
         bytes[0] = static_cast<uint8_t>((bits & 0x00FF) >> 0);
         bytes[1] = static_cast<uint8_t>((bits & 0xFF00) >> 8);
     }
 
-    //FIXME
     bitset(uint32_t bits) {
         static_assert(N >= 32);
         bytes[0] = static_cast<uint8_t>((bits & 0x000000FF) >> 0);
@@ -53,7 +53,6 @@ public:
         bytes[3] = static_cast<uint8_t>((bits & 0xFF000000) >> 24);
     }
 
-    //FIXME
     bitset(uint64_t bits) {
         static_assert(N >= 64);
         bytes[0] = static_cast<uint8_t>((bits & 0x00000000000000FF) >> 0);
@@ -103,7 +102,7 @@ public:
 
     void set(size_t idx) {
         size_t byte_idx = idx / 8;
-        size_t bit_idx = idx - byte_idx;
+        size_t bit_idx = idx % 8;
 
         switch (bit_idx) {
             case 0: bytes[byte_idx] |= ZERO;  break;
@@ -124,7 +123,7 @@ public:
 
     void clr(size_t idx) {
         size_t byte_idx = idx / 8;
-        size_t bit_idx = idx - byte_idx;
+        size_t bit_idx = idx % 8;
 
         switch (bit_idx) {
             case 0: bytes[byte_idx] &= ~ZERO;  break;
@@ -183,7 +182,7 @@ public:
         size_t bit_idx = 0;
         for (size_t i = 0; i < bytes.size(); ++i) {
             uint8_t byte = bytes[i];
-            for (size_t j = 0; bit_idx < N; ++j) {
+            for (size_t j = 0; bit_idx < N && j < 8; ++j) {
                 repr += std::to_string(byte % 2);
                 byte /= 2;
                 bit_idx++;

@@ -129,7 +129,13 @@ TEST(enumerate, it_works) {
 }
 
 TEST(ceil, constexpr_ceil) {
-    static_assert(hd::ceil(4.0 / 8) == 1);
-    static_assert(hd::ceil(8.0 / 8) == 1);
-    static_assert(hd::ceil(9.0 / 8) == 2);
+    static_assert(hd::ceil(4.0 / 8) == 1.0);
+    static_assert(hd::ceil(8.0 / 8) == 1.0);
+    static_assert(hd::ceil(9.0 / 8) == 2.0);
+}
+
+TEST(ceil, constexpr_floor) {
+    static_assert(hd::floor(4.0 / 8) == 0.0);
+    static_assert(hd::floor(8.0 / 8) == 1.0);
+    static_assert(hd::floor(9.0 / 8) == 1.0);
 }

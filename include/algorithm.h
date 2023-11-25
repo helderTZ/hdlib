@@ -116,11 +116,6 @@ private:
     friend enumerate_iterator<T> enumerate<T>(const T& data);
 
 public:
-    // enumerate_iterator(const enumerate_iterator&) = default;
-    // enumerate_iterator(enumerate_iterator&&) = default;
-    // enumerate_iterator operator=(const enumerate_iterator&) = default;
-    // enumerate_iterator operator=(enumerate_iterator&&) = default;
-
     enumerate_iterator begin() { return enumerate_iterator{container, container.begin(), 0}; }
     enumerate_iterator end() { return enumerate_iterator{container, container.end(), container.size()}; }
     void next() { iterator = std::next(iterator); ++index; }
@@ -147,13 +142,21 @@ enumerate_iterator<T> enumerate(const T& data) {
     return enumerate_iterator{data, data.begin(), static_cast<size_t>(0)};
 }
 
+// a constexpr ceil() (only constexpr in c++23)
 // Adapted from https://stackoverflow.com/a/66146159/13499951
 template<typename T,
          std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
-constexpr size_t ceil(T value) {
+constexpr T ceil(T value) {
     const int64_t integer = static_cast<int64_t>(value);
     return value > integer ? integer+1 : integer;
 }
+// a constexpr floor() (only constexpr in c++23)
+template<typename T,
+         std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
+constexpr T floor(T value) {
+    return static_cast<int64_t>(value);
+}
+
 
 // TODO
 // https://stackoverflow.com/a/46282024/13499951
