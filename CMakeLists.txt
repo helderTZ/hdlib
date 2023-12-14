@@ -50,3 +50,7 @@ gtest_discover_tests(test_channel)
 add_executable(test_bitset test/test_bitset.cpp)
 target_link_libraries(test_bitset hdlib gtest_main)
 gtest_discover_tests(test_bitset)
+
+add_executable(test_hash test/test_hash.cpp)
+target_link_libraries(test_hash hdlib gtest_main)
+gtest_discover_tests(test_hash)

@@ -66,6 +66,19 @@ cc_test(
     visibility = ["//visibility:public"],
 )
 
+cc_test(
+    name = "test_hash",
+    size = "small",
+    srcs = [
+        "test_hash.cpp",
+    ],
+    deps = [
+        "//:hdlib",
+        "@googletest//:gtest_main",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 cc_binary(
     name = "test_timeit",
     srcs = [
