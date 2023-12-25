@@ -264,8 +264,8 @@ uint128_t fnv_1a<uint128_t>(void* const data, const size_t len) {
     uint128_t digest = FNV_OFFSET_BASIS;
     for (size_t i = 0; i < len; ++i) {
         uint8_t byte = reinterpret_cast<uint8_t*>(data)[i];
-        digest.exor(static_cast<uint128_t>(uint128_t{byte, 0}));
-        digest.mul(FNV_PRIME);
+        digest ^= static_cast<uint128_t>(uint128_t{0, byte});
+        digest *= FNV_PRIME;
     }
 
     return digest;
@@ -279,8 +279,8 @@ uint256_t fnv_1a<uint256_t>(void* const data, const size_t len) {
     uint256_t digest = FNV_OFFSET_BASIS;
     for (size_t i = 0; i < len; ++i) {
         uint8_t byte = reinterpret_cast<uint8_t*>(data)[i];
-        digest.exor(static_cast<uint256_t>(uint256_t{uint128_t{byte, 0}, uint128_t{0, 0}}));
-        digest.mul(FNV_PRIME);
+        digest ^= static_cast<uint256_t>(uint256_t{uint128_t{byte, 0}, uint128_t{0, 0}});
+        digest *= FNV_PRIME;
     }
 
     return digest;

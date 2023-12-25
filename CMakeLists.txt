@@ -58,3 +58,7 @@ gtest_discover_tests(test_hash)
 add_executable(test_bloom test/test_bloom.cpp)
 target_link_libraries(test_bloom hdlib gtest_main)
 gtest_discover_tests(test_bloom)
+
+add_executable(test_biggerints test/test_biggerints.cpp)
+target_link_libraries(test_biggerints hdlib gtest_main)
+gtest_discover_tests(test_biggerints)
