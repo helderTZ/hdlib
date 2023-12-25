@@ -5,11 +5,15 @@
 #include <cstdint>
 #include <cstddef>
 #include <cstring>
+#include <cmath>
+#include <limits>
 
 #include <vector>
 #include <array>
 #include <algorithm>
 #include <type_traits>
+
+#include <biggerints.h>
 
 namespace hd {
 
@@ -127,7 +131,7 @@ namespace impl {
 // also check out https://foss.heptapod.net/pypy/pypy/-/blob/branch/default/lib_pypy/_sha256.py
 // also check out https://medium.com/@domspaulo/python-implementation-of-sha-256-from-scratch-924f660c5d57
 // also check out https://github.com/B-Con/crypto-algorithms/blob/master/sha256_test.c
-std::vector<uint8_t> sha256(void* data, size_t len) {
+std::vector<uint8_t> sha256(void* const data, const size_t len) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wparentheses"
 
@@ -222,7 +226,24 @@ std::vector<uint8_t> sha256(void* data, size_t len) {
 #pragma GCC diagnostic pop
 }
 
-uint64_t fnv_1a(void* data, size_t len) {
+template <typename T> T fnv_1a(void* const data, const size_t len);
+
+template<>
+uint32_t fnv_1a<uint32_t>(void* const data, const size_t len) {
+    constexpr uint32_t FNV_OFFSET_BASIS = 0x811c9dc5U;
+    constexpr uint32_t FNV_PRIME = 0x01000193U;
+    
+    uint32_t digest = FNV_OFFSET_BASIS;
+    for (size_t i = 0; i < len; ++i) {
+        digest ^= reinterpret_cast<uint8_t*>(data)[i];
+        digest *= FNV_PRIME;
+    }
+
+    return digest;
+}
+
+template<>
+uint64_t fnv_1a<uint64_t>(void* const data, const size_t len) {
     constexpr uint64_t FNV_OFFSET_BASIS = 0xcbf29ce484222325UL;
     constexpr uint64_t FNV_PRIME = 0x100000001b3UL;
     
@@ -230,6 +251,36 @@ uint64_t fnv_1a(void* data, size_t len) {
     for (size_t i = 0; i < len; ++i) {
         digest ^= reinterpret_cast<uint8_t*>(data)[i];
         digest *= FNV_PRIME;
+    }
+
+    return digest;
+}
+
+template<>
+uint128_t fnv_1a<uint128_t>(void* const data, const size_t len) {
+    constexpr uint128_t FNV_OFFSET_BASIS = { 7113472399480571277ULL, 7809847782465536322ULL }; // 144066263297769815596495629667062367629
+    constexpr uint128_t FNV_PRIME = { 315ULL, 16777216ULL}; // 309485009821345068724781371
+
+    uint128_t digest = FNV_OFFSET_BASIS;
+    for (size_t i = 0; i < len; ++i) {
+        uint8_t byte = reinterpret_cast<uint8_t*>(data)[i];
+        digest.exor(static_cast<uint128_t>(uint128_t{byte, 0}));
+        digest.mul(FNV_PRIME);
+    }
+
+    return digest;
+}
+
+template<>
+uint256_t fnv_1a<uint256_t>(void* const data, const size_t len) {
+    constexpr uint256_t FNV_OFFSET_BASIS = { {1162971903282775349ULL, 14461431585808235443ULL}, {3285590903173248716ULL, 15935580172955504694ULL} }; // 100029257958052580907070968620625704837092796014241193945225284501741471925557
+    constexpr uint256_t FNV_PRIME = { {0ULL, 355ULL}, {1099511627776ULL, 0ULL} }; // 374144419156711147060143317175368453031918731002211
+
+    uint256_t digest = FNV_OFFSET_BASIS;
+    for (size_t i = 0; i < len; ++i) {
+        uint8_t byte = reinterpret_cast<uint8_t*>(data)[i];
+        digest.exor(static_cast<uint256_t>(uint256_t{uint128_t{byte, 0}, uint128_t{0, 0}}));
+        digest.mul(FNV_PRIME);
     }
 
     return digest;
