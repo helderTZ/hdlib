@@ -48,7 +48,7 @@ TEST(hash, it_works) {
     const char* msg = "hello world";
     uint64_t expected = 0x779a65e7023cd2e7U;
 
-    auto digest = fnv_1a((void*)msg, strlen(msg));
+    auto digest = fnv_1a<uint64_t>((void*)msg, strlen(msg));
 
     EXPECT_EQ(digest, expected) << "digest   : " << digest << "\nexpected : " << expected;
 }
@@ -57,7 +57,7 @@ TEST(hash, fnv1a_empty_str) {
     const char* msg = "";
     uint64_t expected = 14695981039346656037U;
 
-    auto digest = fnv_1a((void*)msg, strlen(msg));
+    auto digest = fnv_1a<uint64_t>((void*)msg, strlen(msg));
 
     EXPECT_EQ(digest, expected) << "digest   : " << digest << "\nexpected : " << expected;
 }
