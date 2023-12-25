@@ -113,7 +113,7 @@ public:
             case 5: bytes[byte_idx] |= FIVE;  break;
             case 6: bytes[byte_idx] |= SIX;   break;
             case 7: bytes[byte_idx] |= SEVEN; break;
-            default: assert(false); // unreachable
+            default: assert(false && "Unreachable");
         }
     }
 
@@ -134,7 +134,7 @@ public:
             case 5: bytes[byte_idx] &= ~FIVE;  break;
             case 6: bytes[byte_idx] &= ~SIX;   break;
             case 7: bytes[byte_idx] &= ~SEVEN; break;
-            default: assert(false); // unreachable
+            default: assert(false && "Unreachable");
         }
     }
 
@@ -151,7 +151,7 @@ public:
             case 5: return bytes[byte_idx] & FIVE;
             case 6: return bytes[byte_idx] & SIX;
             case 7: return bytes[byte_idx] & SEVEN;
-            default: assert(false); // unreachable
+            default: assert(false && "Unreachable");
         }
     }
 
@@ -173,7 +173,7 @@ public:
             case 5: bytes[byte_idx] ^= FIVE;  break;
             case 6: bytes[byte_idx] ^= SIX;   break;
             case 7: bytes[byte_idx] ^= SEVEN; break;
-            default: assert(false); // unreachable
+            default: assert(false && "Unreachable");
         }
     }
 
