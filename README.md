@@ -13,6 +13,7 @@ Some are actually useful, others are reimplementations of standard library I do 
 - [x] fft
 - [x] last
 - [x] enumerate (python-like enumerate)
+
 ### String
 - [x] has_whitespace
 - [x] is_alphanumeric
@@ -34,6 +35,9 @@ Some are actually useful, others are reimplementations of standard library I do 
 - [x] channel (golang-like channels)
 - [x] lifetime (class that traces constructions, copies, moves, ...)
 - [x] timeit (for measuring a function's duration)
+- [x] hashes (sha256, fnv_1a)
+- [x] bloom filter
+- [x] biggerints (bigger integer types such as `uint128_t` and `uint256_t`)
 
 ## Build instructions
 
@@ -45,9 +49,9 @@ $ mkdir build && cd build && cmake ..
 Using Bazel:
 ```console
 $ bazel build //:hdlib
+$ bazel build //... # to build tests
 ```
 
 ## TODO
 
-- bloom filter
 - ranges
