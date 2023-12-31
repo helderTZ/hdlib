@@ -35,9 +35,9 @@ public:
 
 private:
     using HashFunc = uint256_t (*)(void*, const size_t);
-    constexpr static size_t NUM_BITS = 8U;
+    constexpr static size_t NUM_BITS = 256U;
     constexpr static size_t NUM_HASHES = 4U;
-    constexpr static size_t DIGEST_SIZE = 64U;
+    constexpr static size_t DIGEST_SIZE = 256U;
     hd::bitset<NUM_BITS> bits;
     HashFunc hash_func = fnv_1a<uint256_t>;
 };

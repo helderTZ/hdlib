@@ -101,8 +101,12 @@ public:
     }
 
     void set(size_t idx) {
+        if (idx > N-1) {
+            throw std::out_of_range("idx out of bounds");
+        }
+
         size_t byte_idx = idx / 8;
-        size_t bit_idx = idx % 8;
+        size_t bit_idx = byte_idx == 0 ? idx : idx % byte_idx;
 
         switch (bit_idx) {
             case 0: bytes[byte_idx] |= ZERO;  break;
@@ -122,8 +126,12 @@ public:
     }
 
     void clr(size_t idx) {
+        if (idx > N-1) {
+            throw std::out_of_range("idx out of bounds");
+        }
+
         size_t byte_idx = idx / 8;
-        size_t bit_idx = idx % 8;
+        size_t bit_idx = byte_idx == 0 ? idx : idx % byte_idx;
 
         switch (bit_idx) {
             case 0: bytes[byte_idx] &= ~ZERO;  break;
@@ -139,8 +147,12 @@ public:
     }
 
     bool get(size_t idx) const {
+        if (idx > N-1) {
+            throw std::out_of_range("idx out of bounds");
+        }
+
         size_t byte_idx = idx / 8;
-        size_t bit_idx = idx - byte_idx;
+        size_t bit_idx = byte_idx == 0 ? idx : idx % byte_idx;
 
         switch (bit_idx) {
             case 0: return bytes[byte_idx] & ZERO;
@@ -161,8 +173,12 @@ public:
     }
 
     void flip(size_t idx) {
+        if (idx > N-1) {
+            throw std::out_of_range("idx out of bounds");
+        }
+
         size_t byte_idx = idx / 8;
-        size_t bit_idx = idx - byte_idx;
+        size_t bit_idx = byte_idx == 0 ? idx : idx % byte_idx;
 
         switch (bit_idx) {
             case 0: bytes[byte_idx] ^= ZERO;  break;

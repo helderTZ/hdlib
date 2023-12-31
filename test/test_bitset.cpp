@@ -145,3 +145,37 @@ TEST(bitset, constructors) {
     bitset<64> uut_u64{(uint64_t)   0b0011001100001111101001010011110000110011000011111010010100111100};
     EXPECT_EQ(uut_u64.to_string(), "0b0011001100001111101001010011110000110011000011111010010100111100");
 }
+
+TEST(bitset, throws_when_idx_greater_than_N) {
+    bitset<10> uut;
+
+    EXPECT_THROW(uut.set(10), std::out_of_range);
+}
+
+TEST(bitset, lots_bits) {
+    bitset<256> uut;
+
+    uut.set(0);
+    uut.set(100);
+    uut.set(128);
+    uut.set(200);
+    uut.set(255);
+
+    EXPECT_TRUE(uut.get(0));
+    EXPECT_TRUE(uut.get(100));
+    EXPECT_TRUE(uut.get(128));
+    EXPECT_TRUE(uut.get(200));
+    EXPECT_TRUE(uut.get(255));
+    for (size_t i = 1; i < 100; ++i) {
+        EXPECT_FALSE(uut.get(i));
+    }
+    for (size_t i = 101; i < 128; ++i) {
+        EXPECT_FALSE(uut.get(i));
+    }
+    for (size_t i = 129; i < 200; ++i) {
+        EXPECT_FALSE(uut.get(i));
+    }
+    for (size_t i = 201; i < 255; ++i) {
+        EXPECT_FALSE(uut.get(i));
+    }
+}
