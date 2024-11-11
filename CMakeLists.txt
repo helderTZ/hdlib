@@ -62,3 +62,7 @@ gtest_discover_tests(test_bloom)
 add_executable(test_biggerints test/test_biggerints.cpp)
 target_link_libraries(test_biggerints hdlib gtest_main)
 gtest_discover_tests(test_biggerints)
+
+add_executable(test_defer test/test_defer.cpp)
+target_link_libraries(test_defer hdlib gtest_main)
+gtest_discover_tests(test_defer)
