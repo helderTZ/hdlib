@@ -8,16 +8,16 @@ namespace hd {
 #define CONCAT(a, b) CONCAT_INNER(a, b)
 #define CONCAT_INNER(a, b) a ## b
 
-#define NAMED_DEFER(name, fn) Deferred defer_##name(std::forward< std::function<void()> >(fn));
-#define DEFER(fn) Deferred CONCAT(defer_, __COUNTER__)(std::forward< std::function<void()> >(fn));
+#define NAMED_DEFER(name, fn) Deferred defer_##name((fn));
+#define DEFER(fn) Deferred CONCAT(defer_, __COUNTER__)((fn));
 
 class Deferred {
 private:
     std::function<void()> _fn;
 
 public:
-    Deferred(std::function<void()>&& fn)
-        : _fn(std::forward< std::function<void()> >(fn)) {}
+    Deferred(std::function<void()> fn)
+        : _fn(fn) {}
 
     ~Deferred() { _fn(); }
 };
