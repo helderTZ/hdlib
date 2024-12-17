@@ -66,3 +66,11 @@ gtest_discover_tests(test_biggerints)
 add_executable(test_defer test/test_defer.cpp)
 target_link_libraries(test_defer hdlib gtest_main)
 gtest_discover_tests(test_defer)
+
+add_executable(test_signals test/test_signals.cpp)
+target_link_libraries(test_signals hdlib gtest_main)
+gtest_discover_tests(test_signals)
+
+add_executable(test_property test/test_property.cpp)
+target_link_libraries(test_property hdlib gtest_main)
+gtest_discover_tests(test_property)

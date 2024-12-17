@@ -124,3 +124,25 @@ cc_binary(
     ],
     visibility = ["//visibility:public"],
 )
+
+cc_binary(
+    name = "test_property",
+    srcs = [
+        "test_property.cpp",
+    ],
+    deps = [
+        "//:hdlib",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "test_signals",
+    srcs = [
+        "test_signals.cpp",
+    ],
+    deps = [
+        "//:hdlib",
+    ],
+    visibility = ["//visibility:public"],
+)
