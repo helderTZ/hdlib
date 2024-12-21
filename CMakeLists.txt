@@ -75,7 +75,10 @@ add_executable(test_property test/test_property.cpp)
 target_link_libraries(test_property hdlib gtest_main)
 gtest_discover_tests(test_property)
 
-
 add_executable(test_scratchbuff test/test_scratchbuff.cpp)
 target_link_libraries(test_scratchbuff hdlib gtest_main)
 gtest_discover_tests(test_scratchbuff)
+
+add_executable(test_string_view test/test_string_view.cpp)
+target_link_libraries(test_string_view hdlib gtest_main)
+gtest_discover_tests(test_string_view)

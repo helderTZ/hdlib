@@ -157,3 +157,15 @@ cc_binary(
     ],
     visibility = ["//visibility:public"],
 )
+
+
+cc_binary(
+    name = "test_string_view",
+    srcs = [
+        "test_string_view.cpp",
+    ],
+    deps = [
+        "//:hdlib",
+    ],
+    visibility = ["//visibility:public"],
+)
