@@ -74,3 +74,8 @@ gtest_discover_tests(test_signals)
 add_executable(test_property test/test_property.cpp)
 target_link_libraries(test_property hdlib gtest_main)
 gtest_discover_tests(test_property)
+
+
+add_executable(test_scratchbuff test/test_scratchbuff.cpp)
+target_link_libraries(test_scratchbuff hdlib gtest_main)
+gtest_discover_tests(test_scratchbuff)
