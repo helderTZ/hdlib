@@ -16,6 +16,34 @@ TEST(scratchbuff, alloc) {
     ASSERT_EQ(*i, 10);
 }
 
+TEST(scratchbuff, allocTemplatedDefaultConstructible) {
+    scratchbuff uut;
+
+    struct SomeStruct {
+        int a;
+        char b;
+    };
+
+    //NOTE: this only allocs, it doesn't construct the object
+    SomeStruct* ss = uut.alloc<SomeStruct>();
+    ASSERT_TRUE(ss != nullptr);
+}
+
+TEST(scratchbuff, allocTemplatedArgsForwarding) {
+    scratchbuff uut;
+
+    struct SomeStruct{
+        SomeStruct(int a, char b) : a(a), b(b) {}
+        int a;
+        char b;
+    };
+
+    SomeStruct* ss = uut.alloc<SomeStruct>(10, 'b');
+    ASSERT_TRUE(ss != nullptr);
+    ASSERT_EQ(ss->a, 10);
+    ASSERT_EQ(ss->b, 'b');
+}
+
 TEST(scratchbuff, markers) {
     scratchbuff uut;
 

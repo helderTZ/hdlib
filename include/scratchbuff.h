@@ -38,6 +38,27 @@ public:
         return ptr;
     }
 
+    template<typename T>
+    T* alloc() {
+        if ((char*)_curr + sizeof(T) > _end) {
+            return nullptr;
+        }
+        void* ptr = _curr;
+        _curr = (char*)_curr + sizeof(T);
+        return reinterpret_cast<T*>(ptr);
+    }
+
+    template<typename T, typename... Args>
+    T* alloc(Args&&... args) {
+        if ((char*)_curr + sizeof(T) > _end) {
+            return nullptr;
+        }
+        void* ptr = _curr;
+        new(ptr) T(std::forward<Args>(args)...);
+        _curr = (char*)_curr + sizeof(T);
+        return reinterpret_cast<T*>(ptr);
+    }
+
     Marker set_marker() {
         return Marker(_curr);
     }
