@@ -82,3 +82,8 @@ gtest_discover_tests(test_scratchbuff)
 add_executable(test_string_view test/test_string_view.cpp)
 target_link_libraries(test_string_view hdlib gtest_main)
 gtest_discover_tests(test_string_view)
+
+
+add_executable(test_jthread test/test_jthread.cpp)
+target_link_libraries(test_jthread hdlib gtest_main)
+gtest_discover_tests(test_jthread)
