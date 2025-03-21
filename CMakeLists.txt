@@ -83,7 +83,11 @@ add_executable(test_string_view test/test_string_view.cpp)
 target_link_libraries(test_string_view hdlib gtest_main)
 gtest_discover_tests(test_string_view)
 
-
 add_executable(test_jthread test/test_jthread.cpp)
 target_link_libraries(test_jthread hdlib gtest_main)
 gtest_discover_tests(test_jthread)
+
+
+add_executable(test_parallel test/test_parallel.cpp)
+target_link_libraries(test_parallel hdlib gtest_main)
+gtest_discover_tests(test_parallel)
