@@ -82,7 +82,7 @@ TEST(last, check_for_unnecessary_copies) {
     auto& _ = last(uut);
     static_cast<void>(_);
 
-    ASSERT_EQ(3, ObjLifetimeInspector::id);
+    ASSERT_EQ(3U, ObjLifetimeInspector::id);
 }
 
 TEST(enumerate, it_works) {

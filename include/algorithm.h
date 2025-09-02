@@ -56,7 +56,7 @@ template <typename It
 bool has_duplicates(It begin, It end) {
     long int unique = 0;
     for (It it = begin; it != end; ++it) {
-        if (unique & (1U << static_cast<int>(*it)) != 0) {
+        if (unique & ((1U << static_cast<int>(*it)) != 0)) {
             return false;
         } else {
             unique |= 1U << static_cast<int>(*it);
