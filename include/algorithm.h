@@ -5,6 +5,7 @@
 #include <complex>
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <vector>   // for mergesort
 
 namespace hd {
 
@@ -155,6 +156,59 @@ template<typename T,
          std::enable_if_t<std::is_floating_point<T>::value, bool> = true>
 constexpr T floor(T value) {
     return static_cast<int64_t>(value);
+}
+
+template<typename Container, typename Predicate>
+std::vector<typename Container::value_type> mergesort(const Container& container, Predicate pred) {
+    static auto merge = [&pred](const std::vector<typename Container::value_type>& left,
+                                const std::vector<typename Container::value_type>& right)
+        {
+            auto l = left.cbegin();
+            auto r = right.cbegin();
+            std::vector<typename Container::value_type> merged;
+            merged.reserve(left.size() + right.size());
+
+            while (l != left.cend() && r != right.cend()) {
+                if (!pred(*l, *r)) {
+                    merged.push_back(*r);
+                    r++;
+                } else {
+                    merged.push_back(*l);
+                    l++;
+                }
+            }
+
+            while (l != left.cend()) {
+                merged.push_back(*l);
+                l++;
+            }
+
+            while (r != right.cend()) {
+                merged.push_back(*r);
+                r++;
+            }
+
+            return merged;
+        };
+
+    size_t size = std::distance(container.cbegin(), container.cend());
+    auto mid = std::next(container.cbegin(), size / 2);
+
+    std::vector<typename Container::value_type> left(container.cbegin(), mid);
+    std::vector<typename Container::value_type> right(mid, container.cend());
+
+    if (size > 2) {
+        left = mergesort(left, pred);
+        right = mergesort(right, pred);
+    }
+
+    auto merged = merge(left, right);
+    return merged;
+}
+
+template<typename Container, typename T = typename Container::value_type>
+std::vector<T> mergesort(const Container& container) {
+    return mergesort(container, std::less<T>());
 }
 
 
