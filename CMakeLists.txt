@@ -87,6 +87,9 @@ add_executable(test_jthread test/test_jthread.cpp)
 target_link_libraries(test_jthread hdlib gtest_main)
 gtest_discover_tests(test_jthread)
 
+add_executable(test_heap test/test_heap.cpp)
+target_link_libraries(test_heap hdlib gtest_main)
+gtest_discover_tests(test_heap)
 
 add_executable(test_parallel test/test_parallel.cpp)
 target_link_libraries(test_parallel hdlib gtest_main)

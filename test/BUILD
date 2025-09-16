@@ -190,3 +190,15 @@ cc_binary(
     ],
     visibility = ["//visibility:public"],
 )
+
+
+cc_binary(
+    name = "test_heap",
+    srcs = [
+        "test_heap.cpp",
+    ],
+    deps = [
+        "//:hdlib",
+    ],
+    visibility = ["//visibility:public"],
+)
