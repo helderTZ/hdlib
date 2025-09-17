@@ -191,11 +191,21 @@ cc_binary(
     visibility = ["//visibility:public"],
 )
 
-
 cc_binary(
     name = "test_heap",
     srcs = [
         "test_heap.cpp",
+    ],
+    deps = [
+        "//:hdlib",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "test_sort",
+    srcs = [
+        "test_sort.cpp",
     ],
     deps = [
         "//:hdlib",

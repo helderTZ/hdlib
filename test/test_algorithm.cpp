@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 #include "algorithm.h"
 
-#include <random>
 #include <vector>
 
 using namespace hd;
@@ -139,26 +138,4 @@ TEST(ceil, constexpr_floor) {
     static_assert(hd::floor(4.0 / 8) == 0.0);
     static_assert(hd::floor(8.0 / 8) == 1.0);
     static_assert(hd::floor(9.0 / 8) == 1.0);
-}
-
-TEST(sort, mergesort) {
-    std::vector<int> a{1, 3, 2, 7, 6};
-    std::vector<int> b{1, 3, 2, 7, 6};
-    std::vector<int> a_sorted = hd::mergesort(a);
-    std::sort(b.begin(), b.end());
-
-    ASSERT_EQ(a_sorted, b);
-}
-
-TEST(sort, mergesort2) {
-    std::random_device dev;
-    std::mt19937 rng(dev());
-    std::uniform_int_distribution<int> dist;
-    std::vector<int> a;
-    for (int i = 0; i < 1000; i++) a.push_back(dist(rng));
-    std::vector<int> b = a;
-    std::vector<int> a_sorted = hd::mergesort(a);
-    std::sort(b.begin(), b.end());
-
-    ASSERT_EQ(a_sorted, b);
 }
