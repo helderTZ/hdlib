@@ -98,3 +98,7 @@ gtest_discover_tests(test_heap)
 add_executable(test_parallel test/test_parallel.cpp)
 target_link_libraries(test_parallel hdlib gtest_main)
 gtest_discover_tests(test_parallel)
+
+add_executable(test_trie test/test_trie.cpp)
+target_link_libraries(test_trie hdlib gtest_main)
+gtest_discover_tests(test_trie)
