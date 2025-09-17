@@ -29,9 +29,14 @@ private:
 
     void free_node(Node* node) {
         for (auto [c, n] : node->children) {
-            free_node(n);
+            if (n != nullptr) {
+                free_node(n);
+                node->children[c] = nullptr;
+            }
         }
-        if (node != nullptr) free(node);
+        if (node != nullptr) {
+            delete node;
+        }
     }
 
     Node* root;
