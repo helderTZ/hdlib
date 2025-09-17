@@ -73,16 +73,18 @@ public:
     }
 
     void pop_n(size_t n) {
+        n = std::min(n, size);
         for(size_t i = 0; i < n; i++) {
             pop();
         }
     }
     
     std::vector<T> top_n(size_t n) {
+        n = std::min(n, size);
         std::vector<T> result;
         result.reserve(n);
         for(size_t i = 0; i < n; i++) {
-            result.push_back(top());
+            result.push_back(top().value());
             pop();
         }
         return result;

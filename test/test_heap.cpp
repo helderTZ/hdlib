@@ -44,3 +44,31 @@ TEST(heap, maxheap) {
     maxh.pop();
     EXPECT_FALSE(maxh.top().has_value());
 }
+
+TEST(heap, minheap_top_n) {
+    hd::minheap<int> h;
+
+    h.push(10);
+    h.push(20);
+    h.push(5);
+
+    auto v = h.top_n(5);
+    EXPECT_EQ(v.size(), 3U);
+    EXPECT_EQ(v[0], 5);
+    EXPECT_EQ(v[1], 10);
+    EXPECT_EQ(v[2], 20);
+}
+
+TEST(heap, maxheap_top_n) {
+    hd::maxheap<int> h;
+
+    h.push(10);
+    h.push(20);
+    h.push(5);
+
+    auto v = h.top_n(5);
+    EXPECT_EQ(v.size(), 3U);
+    EXPECT_EQ(v[0], 20);
+    EXPECT_EQ(v[1], 10);
+    EXPECT_EQ(v[2], 5);
+}
