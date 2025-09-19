@@ -223,3 +223,14 @@ cc_binary(
     ],
     visibility = ["//visibility:public"],
 )
+
+cc_binary(
+    name = "test_cache",
+    srcs = [
+        "test_cache.cpp",
+    ],
+    deps = [
+        "//:hdlib",
+    ],
+    visibility = ["//visibility:public"],
+)
