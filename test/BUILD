@@ -245,3 +245,14 @@ cc_binary(
     ],
     visibility = ["//visibility:public"],
 )
+
+cc_binary(
+    name = "test_latch",
+    srcs = [
+        "test_latch.cpp",
+    ],
+    deps = [
+        "//:hdlib",
+    ],
+    visibility = ["//visibility:public"],
+)
