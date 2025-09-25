@@ -1,32 +1,33 @@
 #pragma once
 
 #include <unordered_map>
-#include <atomic>
+#include <mutex>
 #include <thread>
-#include <algorithm>
-#include <numeric>
 
 namespace hd {
 
 class long_adder {
 private:
-    std::unordered_map<std::thread::id, std::atomic<uint64_t>> m;
+    std::mutex mtx;
+    std::unordered_map<std::thread::id, uint64_t> m;
 
 public:
     long_adder() = default;
 
-    void register_thread() {
+    uint64_t& register_thread() {
+        std::scoped_lock lk(mtx);
         m[std::this_thread::get_id()] = 0U;
+        return m[std::this_thread::get_id()];
     }
 
     void inc() {
-        m[std::this_thread::get_id()].fetch_add(1U, std::memory_order_relaxed);
+        m[std::this_thread::get_id()]++;
     }
 
     uint64_t sum() {
         uint64_t acc = 0U;
         for (const auto& [id, val] : m) {
-            acc += val.load(std::memory_order_relaxed);
+            acc += val;
         }
         return acc;
     }
