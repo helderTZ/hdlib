@@ -36,24 +36,24 @@ TEST(sort, mergesort_container) {
 }
 
 
-// TEST(sort, quicksort) {
-//     std::vector<int> a{1, 3, 2, 7, 6};
-//     std::vector<int> b{1, 3, 2, 7, 6};
-//     hd::quicksort(a.begin(), a.end());
-//     std::sort(b.begin(), b.end());
+TEST(sort, quicksort) {
+    std::vector<int> a{1, 3, 2, 7, 6};
+    std::vector<int> b{1, 3, 2, 7, 6};
+    hd::quicksort(a.begin(), a.end());
+    std::sort(b.begin(), b.end());
 
-//     ASSERT_EQ(a, b);
-// }
+    ASSERT_EQ(a, b);
+}
 
-// TEST(sort, quicksort2) {
-//     std::random_device dev;
-//     std::mt19937 rng(dev());
-//     std::uniform_int_distribution<int> dist;
-//     std::vector<int> a;
-//     for (int i = 0; i < 1000; i++) a.push_back(dist(rng));
-//     std::vector<int> b = a;
-//     hd::quicksort(a.begin(), a.end());
-//     std::sort(b.begin(), b.end());
+TEST(sort, quicksort2) {
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<int> dist;
+    std::vector<int> a;
+    for (int i = 0; i < 1000; i++) a.push_back(dist(rng));
+    std::vector<int> b = a;
+    hd::quicksort(a.begin(), a.end());
+    std::sort(b.begin(), b.end());
 
-//     ASSERT_EQ(a, b);
-// }
+    ASSERT_EQ(a, b);
+}
