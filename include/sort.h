@@ -40,14 +40,13 @@ struct hoare {
         }
 
         while (true) {
-            while (pred(*i, pivot)) {
-                i++;
-            }
+            // stop when ! (*i < pivot) → i.e., when *i >= pivot
+            while (pred(*i, pivot)) { i++; }
 
-            while (pred(pivot, *j)) {
-                j--;
-            }
+            // stop when (*j <= pivot) → i.e., when !(pivot < *j)
+            while (pred(pivot, *j)) { j--; }
 
+            // when j >= i we finished
             if (i == j || std::next(j) == i) {
                 return j;
             }
@@ -89,7 +88,7 @@ Iterator quicksort(Iterator begin, Iterator end) {
 }
 
 template <typename Container, typename PartitionAlgo = impl::lomuto>
-typename Container::iterator quicksort(Container container) {
+typename Container::iterator quicksort(Container& container) {
     return quicksort(container.begin(), container.end(), std::less<typename std::iterator_traits<typename Container::iterator>::value_type>(), PartitionAlgo{});
 }
 
