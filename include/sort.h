@@ -9,81 +9,87 @@ namespace hd {
 
 namespace impl {
 
-struct partition_algo {};
-struct hoare : public partition_algo {};
-struct lomuto : public partition_algo {};
-
 // Lomuto's partition algorithm
-template <typename Iterator, typename Predicate>
-Iterator partition(Iterator begin, Iterator end, Predicate pred, const lomuto& algo = {}) {
-    typename std::iterator_traits<Iterator>::value_type pivot = *std::prev(end);
-    Iterator i = begin;
-    for (auto j = begin; j != end; std::advance(j, 1)) {
-        if (pred(*j, pivot)) {
-            std::iter_swap(i, j);
+struct lomuto {
+    template <typename Iterator, typename Predicate>
+    Iterator operator()(Iterator begin, Iterator end, Predicate pred) {
+        Iterator pivot = std::prev(end);
+        Iterator i = begin; // always points to the first element > pivot
+        for (auto j = begin; j != pivot; j++) {
+            if (pred(*j, *pivot)) {
+                std::iter_swap(i, j);
+                i++;
+            }
         }
-        std::advance(i, 1);
+
+        std::iter_swap(i, pivot);
+        return i;
     }
-
-    std::iter_swap(i, std::prev(end));
-
-    return i;
-}
+};
 
 // Hoare's partition algorithm
-template <typename Iterator, typename Predicate>
-Iterator partition(Iterator begin, Iterator end, Predicate pred, const hoare& algo = {}) {
-    static std::mt19937 rng(std::random_device{}());
+struct hoare {
+    template <typename Iterator, typename Predicate>
+    Iterator operator()(Iterator begin, Iterator end, Predicate pred) {
+        typename std::iterator_traits<Iterator>::value_type pivot = *begin;
+        Iterator i = begin;
+        Iterator j = std::prev(end);
 
-    size_t size = std::distance(begin, end);
-    
-    std::uniform_int_distribution<std::mt19937::result_type> dist(0, size);
-
-    // typename std::iterator_traits<Iterator>::value_type pivot = *std::next(begin, dist(rng));
-    typename std::iterator_traits<Iterator>::value_type pivot = *std::next(begin, size/2);
-    Iterator i = begin;
-    Iterator j = std::prev(end);
-
-    while (true) {
-        while (pred(*i, pivot)) {
-            i = std::next(i);
+        if (i == j) {
+            return i;
         }
 
-        while (!pred(*j, pivot)) {
-            j = std::prev(j);
-        }
+        while (true) {
+            // stop when ! (*i < pivot) → i.e., when *i >= pivot
+            while (pred(*i, pivot)) { i++; }
 
-        if (std::distance(i, j) <= 0) {
-            return j;
-        }
+            // stop when (*j <= pivot) → i.e., when !(pivot < *j)
+            while (pred(pivot, *j)) { j--; }
 
-        std::iter_swap(i, j);
+            // when j >= i we finished
+            if (i == j || std::next(j) == i) {
+                return j;
+            }
+
+            std::iter_swap(i, j);
+            i++;
+            j--;
+        }
     }
-}
+};
 
 }   // namespace impl
 
-template <typename Iterator, typename Predicate>
-void quicksort(Iterator begin, Iterator end, Predicate pred) {    
-    size_t size = std::distance(begin, end);
+template <typename Iterator, typename Predicate, typename PartitionAlgo>
+Iterator quicksort(Iterator begin, Iterator end, Predicate pred, PartitionAlgo partition) {
+    // empty or single element
+    if (begin == end || std::next(begin) == end) return begin;
 
-    if (size <= 1) return;
-    if (size == 2) {
+    // two elements
+    if (std::next(begin, 2) == end) {
         Iterator next = std::next(begin);
         if (!pred(*begin, *next)) {
             std::iter_swap(begin, next);
         }
-        return;
+        return begin;
     }
-    
-    Iterator pivot = impl::partition(begin, end, pred, impl::lomuto{});
-    quicksort(begin, pivot, pred);
-    quicksort(std::next(pivot), end, pred);
+
+    Iterator pivot = partition(begin, end, pred);
+    quicksort(begin, pivot, pred, partition);
+    quicksort(std::next(pivot), end, pred, partition);
+
+    // unreachable
+    return begin;
 }
 
-template <typename Iterator>
-void quicksort(Iterator begin, Iterator end) {
-    quicksort(begin, end, std::less<typename std::iterator_traits<Iterator>::value_type>());
+template <typename Iterator, typename PartitionAlgo = impl::lomuto>
+Iterator quicksort(Iterator begin, Iterator end) {
+    return quicksort(begin, end, std::less<typename std::iterator_traits<Iterator>::value_type>(), PartitionAlgo{});
+}
+
+template <typename Container, typename PartitionAlgo = impl::lomuto>
+typename Container::iterator quicksort(Container& container) {
+    return quicksort(container.begin(), container.end(), std::less<typename std::iterator_traits<typename Container::iterator>::value_type>(), PartitionAlgo{});
 }
 
 namespace impl {
