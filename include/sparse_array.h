@@ -37,13 +37,15 @@ class sparse_array  {
             return bitmap & (1 << index);
         }
 
-        // FIXME:
         typename std::vector<T>::iterator find(const size_t index) {
+            if (!lookup(index)) return v.end();
+
             size_t ones = 0;
             for (size_t i = 0; i <= index; i++) {
                 if (test_bit(i)) { ones++; }
             }
-            return (ones == 0U) || (ones > v.size()) ? v.end() : v.begin() + ones-1;
+
+            return v.begin() + ones - 1;
         }
 
         inline bool lookup(const size_t index) {
@@ -84,7 +86,6 @@ public:
     sparse_array(const size_t size) : groups(size / M + 1U) {}
 
     T find(const size_t  index) {
-        if (groups[index / M].bitmap == 0) return T{};
         auto it = groups[index / M].find(index % M);
         if (it == groups[index / M].v.end()) return T{};
         return *it;
@@ -140,7 +141,7 @@ public:
     };
 
     dense_iterator begin() { return dense_iterator(0U, *this); }
-    dense_iterator end() { return dense_iterator(groups.size() * M, *this); }
+    dense_iterator end() { return dense_iterator(count(), *this); }
 };
 
 }   // namespace hd
