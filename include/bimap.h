@@ -6,6 +6,9 @@
 
 namespace hd {
 
+template<typename T>
+struct always_false : std::false_type {};
+
 template <typename A, typename B>
 class bimap {
 private:
@@ -60,70 +63,188 @@ public:
         operator A() const { return it->first; }
     };
 
+    template <typename T>
+    struct Selector {
+        bimap& bm;
+        T t;
+
+        ProxyA left() {
+            if (bm.mapByB.find(t) != bm.mapByB.end()) {
+                return ProxyA{bm, bm.mapByB[t]};
+            }
+            bm.storage.push_back({{}, t});
+            return ProxyA{bm, bm.last()};
+        }
+
+        ProxyB right() {
+            if (bm.mapByA.find(t) != bm.mapByA.end()) {
+                return ProxyB{bm, bm.mapByA[t]};
+            }
+            bm.storage.push_back({t, {}});
+            return ProxyB{bm, bm.last()};
+        }
+    };
+
     friend ProxyA;
     friend ProxyB;
+    friend Selector<A>;
+    friend Selector<B>;
 
-    // TODO: U not needed?
-    template <typename U,
-              typename std::enable_if<std::is_same<U, A>::value && std::is_same<U, B>::value>::type = true>
-    void insert(std::pair<A, B> p) {
-        if (!mapByA.find(p.first) != mapByA.end()) {
-            storage.push_back(p);
-            mapByA[p.first] = last();
-            mapByB[p.second] = last();
+    template <typename Pair>
+    void insert(Pair p) {
+        if constexpr (std::is_same<A, B>::value) {
+            static_assert(std::is_same<Pair, std::pair<A, A>>::value, "invalid pair for A==B");
+            if (!mapByA.find(p.first) != mapByA.end()) {
+                storage.push_back(p);
+                mapByA[p.first] = last();
+                mapByB[p.second] = last();
+            }
+
+        } else if constexpr (std::is_same<Pair, std::pair<A, B>>::value) {
+            if (!mapByA.find(p.first) != mapByA.end()) {
+                storage.push_back(p);
+                mapByA[p.first] = last();
+                mapByB[p.second] = last();
+            }
+
+        } else if constexpr (std::is_same<Pair, std::pair<B, A>>::value) {
+            if (!mapByA.find(p.second) != mapByA.end()) {
+                storage.push_back(reverse(p));
+                mapByA[p.second] = last();
+                mapByB[p.first] = last();
+            }
+
+        } else {
+            static_assert(always_false<Pair>::value, "invalid pair type");
         }
     }
 
-    template <typename std::enable_if<!std::is_same<A, B>::value, bool>::type = true>
-    void insert(std::pair<A, B> p) {
-        if (!mapByA.find(p.first) != mapByA.end()) {
-            storage.push_back(p);
-            mapByA[p.first] = last();
-            mapByB[p.second] = last();
+    // template <
+    //     typename T = A,
+    //     typename std::enable_if<std::is_same<T, B>::value, int>::type = 0>
+    // void insert(std::pair<A, A> p) {
+    //     if (!mapByA.find(p.first) != mapByA.end()) {
+    //         storage.push_back(p);
+    //         mapByA[p.first] = last();
+    //         mapByB[p.second] = last();
+    //     }
+    // }
+
+    // template <
+    //     typename T = A,
+    //     typename std::enable_if<!std::is_same<T, B>::value, int>::type = 0>
+    // void insert(std::pair<A, B> p) {
+    //     if (!mapByA.find(p.first) != mapByA.end()) {
+    //         storage.push_back(p);
+    //         mapByA[p.first] = last();
+    //         mapByB[p.second] = last();
+    //     }
+    // }
+
+    // template <
+    //     typename T = A,
+    //     typename std::enable_if<!std::is_same<T, B>::value, int>::type = 0>
+    // void insert(std::pair<B, A> p) {
+    //     if (!mapByA.find(p.second) != mapByA.end()) {
+    //         storage.push_back(reverse(p));
+    //         mapByA[p.second] = last();
+    //         mapByB[p.first] = last();
+    //     }
+    // }
+
+    template <typename U, typename V>
+    void emplace(U u, V v) {
+        if constexpr (std::is_same<A, B>::value) {
+            static_assert(std::is_same<A, U>::value && std::is_same<B, V>::value, "different types");
+            if (mapByA.find(u) != mapByA.end()) {
+                (*mapByA[u]).second = v;
+                (*mapByB[v]).first = u;
+                return;
+            }
+            storage.push_back({u, v});
+            mapByA[u] = last();
+            mapByB[v] = last();
+
+        } else if constexpr (std::is_same<A, U>::value && std::is_same<B, V>::value) {
+            if (mapByA.find(u) != mapByA.end()) {
+                (*mapByA[u]).second = v;
+                (*mapByB[v]).first = u;
+                return;
+            }
+            storage.push_back({u, v});
+            mapByA[u] = last();
+            mapByB[v] = last();
+
+        } else if constexpr (std::is_same<B, U>::value && std::is_same<A, V>::value) {
+            if (mapByB.find(v) != mapByB.end()) {
+                (*mapByA[u]).second = u;
+                (*mapByB[v]).first = v;
+                return;
+            }
+            storage.push_back({v, u});
+            mapByA[v] = last();
+            mapByB[u] = last();
+
+        } else {
+            static_assert(always_false<std::pair<U, V>>::value, "invalid types");
         }
     }
 
-    template <typename std::enable_if<!std::is_same<A, B>::value, bool>::type = true>
-    void insert(std::pair<B, A> p) {
-        if (!mapByA.find(p.second) != mapByA.end()) {
-            storage.push_back(reverse(p));
-            mapByA[p.second] = last();
-            mapByB[p.first] = last();
-        }
+    // template <
+    //     typename T = A,
+    //     typename std::enable_if<std::is_same<T, B>::value, int>::type = 0>
+    // void emplace(const T a, const T b) {
+    //     if (mapByA.find(a) != mapByA.end()) {
+    //         (*mapByA[a]).second = b;
+    //         (*mapByB[b]).first = a;
+    //         return;
+    //     }
+
+    //     storage.push_back({a, b});
+    //     mapByA[a] = last();
+    //     mapByB[b] = last();
+    // }
+
+    // template <
+    //     typename T = A,
+    //     typename std::enable_if<!std::is_same<T, B>::value, int>::type = 0>
+    // void emplace(const A a, const B b) {
+    //     if (mapByA.find(a) != mapByA.end()) {
+    //         (*mapByA[a]).second = b;
+    //         (*mapByB[b]).first = a;
+    //         return;
+    //     }
+
+    //     storage.push_back({a, b});
+    //     mapByA[a] = last();
+    //     mapByB[b] = last();
+    // }
+
+    // template <
+    //     typename T = A,
+    //     typename std::enable_if<!std::is_same<T, B>::value, int>::type = 0>
+    // void emplace(const B b, const A a) {
+    //     if (mapByB.find(b) != mapByB.end()) {
+    //         (*mapByA[a]).second = b;
+    //         (*mapByB[b]).first = a;
+    //         return;
+    //     }
+
+    //     storage.push_back({a, b});
+    //     mapByA[a] = last();
+    //     mapByB[b] = last();
+    // }
+
+    template <
+        typename T = A,
+        typename std::enable_if<std::is_same<T, B>::value, int>::type = 0>
+    Selector<T> operator[](const T& key) {
+        return Selector<T>{*this, key};
     }
 
-    void emplace(const A a, const B b) {
-        if (mapByA.find(a) != mapByA.end()) {
-            (*mapByA[a]).second = b;
-            (*mapByB[b]).first = a;
-            return;
-        }
-
-        storage.push_back({a, b});
-        mapByA[a] = last();
-        mapByB[b] = last();
-    }
-
-    void emplace(const B b, const A a) {
-        if (mapByB.find(b) != mapByB.end()) {
-            (*mapByA[a]).second = b;
-            (*mapByB[b]).first = a;
-            return;
-        }
-
-        storage.push_back({a, b});
-        mapByA[a] = last();
-        mapByB[b] = last();
-    }
-
-    ProxyB operator[](const A& key) {
-        if (mapByA.find(key) != mapByA.end()) {
-            return ProxyB{*this, mapByA[key]};
-        }
-        storage.push_back({key, {}});
-        return ProxyB{*this, last()};
-    }
-
+    template <
+        typename T = A,
+        typename std::enable_if<!std::is_same<T, B>::value, int>::type = 0>
     ProxyA operator[](const B& key) {
         if (mapByB.find(key) != mapByB.end()) {
             return ProxyA{*this, mapByB[key]};
@@ -132,16 +253,15 @@ public:
         return ProxyA{*this, last()};
     }
 
-    void mutate(const A& key, B& value) {
+    template <
+        typename T = A,
+        typename std::enable_if<!std::is_same<T, B>::value, int>::type = 0>
+    ProxyB operator[](const A& key) {
         if (mapByA.find(key) != mapByA.end()) {
-            (*mapByA[key]).second = value;
-            (*mapByB[value]).first = key;
-            return;
+            return ProxyB{*this, mapByA[key]};
         }
-
-        storage.push_back({key, value});
-        mapByA[key] = last();
-        mapByB[value] = last();
+        storage.push_back({key, {}});
+        return ProxyB{*this, last()};
     }
 };
 
