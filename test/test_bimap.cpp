@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include <ios>
 #include "bimap.h"
 
 using namespace hd;
@@ -48,5 +49,31 @@ TEST(bimap, same_type) {
 
     EXPECT_EQ(uut[1].left(), 10);
     EXPECT_EQ(uut[2].left(), 20);
+    EXPECT_EQ(uut[3].left(), 30);
+}
+
+TEST(bimap, erase) {
+    hd::bimap<int, float> uut;
+
+    uut[1] = 1.0f;
+    uut[2] = 2.0f;
+    uut[3] = 3.0f;
+    uut.erase(2);
+
+    EXPECT_EQ(uut[1], 1.0f);
+    EXPECT_EQ(uut[2], 0.0f);    // default constructed on operator[] access
+    EXPECT_EQ(uut[3], 3.0f);
+}
+
+TEST(bimap, erase_same_types) {
+    hd::bimap<int, int> uut;
+
+    uut[1].left() = 10;
+    uut[2].left() = 20;
+    uut[3].left() = 30;
+    uut.erase(20, decltype(uut)::right{});
+
+    EXPECT_EQ(uut[1].left(), 10);
+    EXPECT_EQ(uut[2].left(), 0);    // default constructed on operator[] access
     EXPECT_EQ(uut[3].left(), 30);
 }

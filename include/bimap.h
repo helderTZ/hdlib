@@ -1,7 +1,7 @@
 #pragma once
 
 #include <unordered_map>
-#include <list>
+#include <vector>
 #include <type_traits>
 
 namespace hd {
@@ -12,55 +12,86 @@ struct always_false : std::false_type {};
 template <typename A, typename B>
 class bimap {
 private:
-    using iterator = typename std::list<std::pair<A, B>>::iterator;
-    std::list<std::pair<A, B>> storage;
-    std::unordered_map<A, iterator> mapByA;
-    std::unordered_map<B, iterator> mapByB;
+    std::vector<std::pair<A, B>> storage;
+    std::unordered_map<A, size_t> mapByA;
+    std::unordered_map<B, size_t> mapByB;
 
     std::pair<B, A> reverse(std::pair<A, B> p) {
         return {p.second, p.first};
     }
 
-    iterator last() {
-        return (++storage.rbegin()).base();
+    size_t last() {
+        return storage.size() - 1UL;
+    }
+
+    void erase_left(const A& a) {
+        const size_t index = mapByA[a];
+        const B b = storage[index].second;
+        auto [a_last, b_last] = storage[last()];
+        swap(storage[index], storage[last()]);
+        storage.pop_back();
+        mapByA[a_last] = index;
+        mapByB[b_last] = index;
+        mapByA.erase(a);
+        mapByB.erase(b);
+    }
+
+    void erase_right(const B& b) {
+        const size_t index = mapByA[b];
+        const A a = storage[index].first;
+        auto [a_last, b_last] = storage[last()];
+        swap(storage[index], storage[last()]);
+        storage.pop_back();
+        mapByA[a_last] = index;
+        mapByB[b_last] = index;
+        mapByA.erase(a);
+        mapByB.erase(b);
     }
 
 public:
 
     struct ProxyB {
         bimap& bm;
-        iterator it;
+        size_t index;
 
         ProxyB& operator=(const B& b) {
-            A a = it->first;
-            bm.mapByA.erase(it->first);
-            bm.mapByB.erase(it->second);
-            bm.storage.erase(it);
+            const A a = bm.storage[index].first;
+            bm.mapByA.erase(bm.storage[index].first);
+            bm.mapByB.erase(bm.storage[index].second);
+            auto [a_last, b_last] = bm.storage[bm.last()];
+            swap(bm.storage[index], bm.storage[bm.last()]);
+            bm.storage.pop_back();
             bm.storage.push_back({a, b});
             bm.mapByA[a] = bm.last();
             bm.mapByB[b] = bm.last();
+            bm.mapByA[a_last] = index;
+            bm.mapByB[b_last] = index;
             return *this;
         }
 
-        operator B() const { return it->second; }
+        operator B() const { return bm.storage[index].second; }
     };
 
     struct ProxyA {
         bimap& bm;
-        iterator it;
+        size_t index;
 
         ProxyA& operator=(const A& a) {
-            B b = it->second;
-            bm.mapByA.erase(it->first);
-            bm.mapByB.erase(it->second);
-            bm.storage.erase(it);
+            const B b = bm.storage[index].second;
+            bm.mapByA.erase(bm.storage[index].first);
+            bm.mapByB.erase(bm.storage[index].second);
+            auto [a_last, b_last] = bm.storage[bm.last()];
+            swap(bm.storage[index], bm.storage[bm.last()]);
+            bm.storage.pop_back();
             bm.storage.push_back({a, b});
             bm.mapByA[a] = bm.last();
             bm.mapByB[b] = bm.last();
+            bm.mapByA[a_last] = index;
+            bm.mapByB[b_last] = index;
             return *this;
         }
 
-        operator A() const { return it->first; }
+        operator A() const { return bm.storage[index].first; }
     };
 
     template <typename T>
@@ -157,8 +188,8 @@ public:
         if constexpr (std::is_same<A, B>::value) {
             static_assert(std::is_same<A, U>::value && std::is_same<B, V>::value, "different types");
             if (mapByA.find(u) != mapByA.end()) {
-                (*mapByA[u]).second = v;
-                (*mapByB[v]).first = u;
+                storage[mapByA[u]].second = v;
+                storage[mapByB[v]].first = u;
                 return;
             }
             storage.push_back({u, v});
@@ -167,8 +198,8 @@ public:
 
         } else if constexpr (std::is_same<A, U>::value && std::is_same<B, V>::value) {
             if (mapByA.find(u) != mapByA.end()) {
-                (*mapByA[u]).second = v;
-                (*mapByB[v]).first = u;
+                storage[mapByA[u]].second = v;
+                storage[mapByB[v]].first = u;
                 return;
             }
             storage.push_back({u, v});
@@ -177,8 +208,8 @@ public:
 
         } else if constexpr (std::is_same<B, U>::value && std::is_same<A, V>::value) {
             if (mapByB.find(v) != mapByB.end()) {
-                (*mapByA[u]).second = u;
-                (*mapByB[v]).first = v;
+                storage[mapByA[u]].second = u;
+                storage[mapByB[v]].first = v;
                 return;
             }
             storage.push_back({v, u});
@@ -234,6 +265,37 @@ public:
     //     mapByA[a] = last();
     //     mapByB[b] = last();
     // }
+
+    struct left  {};
+    struct right {};
+
+    template <typename T, typename Dir = left>
+    void erase(const T& t, [[maybe_unused]] const Dir dir = Dir{}) {
+        if constexpr (std::is_same<A, B>::value) {
+            auto it_a = mapByA.find(t);
+            auto it_b = mapByB.find(t);
+            if (it_a == mapByA.end() && it_b == mapByB.end()) {
+                return;
+            }
+            if (it_a != mapByA.end() && it_b == mapByB.end()) {
+                erase_left(t);
+            } else if (it_a == mapByA.end() && it_b != mapByB.end()) {
+                erase_right(t);
+            } else if constexpr (std::is_same<Dir, left>::value) {
+                erase_left(t);
+            } else if constexpr (std::is_same<Dir, right>::value) {
+                erase_right(t);
+            }
+        } else if constexpr (std::is_same<T, A>::value) {
+            erase_left(t);
+
+        } else if constexpr (std::is_same<T, B>::value) {
+            erase_right(t);
+
+        } else {
+            static_assert(always_false<T>::value, "invalid type");
+        }
+    }
 
     template <
         typename T = A,
