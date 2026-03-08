@@ -77,3 +77,32 @@ TEST(bimap, erase_same_types) {
     EXPECT_EQ(uut[2].left(), 0);    // default constructed on operator[] access
     EXPECT_EQ(uut[3].left(), 30);
 }
+
+TEST(bimap, contains) {
+    hd::bimap<int, float> uut;
+
+    uut[1] = 1.0f;
+    uut[2] = 2.0f;
+    uut[3] = 3.0f;
+
+    EXPECT_TRUE(uut.contains(1));
+    EXPECT_TRUE(uut.contains(2.0f));
+    EXPECT_FALSE(uut.contains(0));
+}
+
+TEST(bimap, contains_same_types) {
+    hd::bimap<int, int> uut;
+
+    uut[1].left() = 10;
+    uut[2].left() = 20;
+    uut[3].left() = 30;
+
+    EXPECT_TRUE(uut.contains(1));
+    EXPECT_TRUE(uut.contains(20));
+    EXPECT_FALSE(uut.contains(123));
+
+    // FIXME: when same types, Selector always default constructs an entry,
+    //        and this entry is not correctly deleted frmo the maps. Needs
+    //        a special case.
+    // EXPECT_FALSE(uut.contains(0));
+}

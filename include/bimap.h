@@ -56,6 +56,15 @@ public:
 
         ProxyB& operator=(const B& b) {
             const A a = bm.storage[index].first;
+
+            if (bm.storage.size() == 1) {
+                bm.storage.pop_back();
+                bm.storage.push_back({a, b});
+                bm.mapByA[a] = bm.last();
+                bm.mapByB[b] = bm.last();
+                return *this;
+            }
+
             bm.mapByA.erase(bm.storage[index].first);
             bm.mapByB.erase(bm.storage[index].second);
             auto [a_last, b_last] = bm.storage[bm.last()];
@@ -78,6 +87,15 @@ public:
 
         ProxyA& operator=(const A& a) {
             const B b = bm.storage[index].second;
+
+            if (bm.storage.size() == 1) {
+                bm.storage.pop_back();
+                bm.storage.push_back({a, b});
+                bm.mapByA[a] = bm.last();
+                bm.mapByB[b] = bm.last();
+                return *this;
+            }
+
             bm.mapByA.erase(bm.storage[index].first);
             bm.mapByB.erase(bm.storage[index].second);
             auto [a_last, b_last] = bm.storage[bm.last()];
@@ -325,6 +343,20 @@ public:
         storage.push_back({key, {}});
         return ProxyB{*this, last()};
     }
+
+    template <typename T>
+    bool contains(const T& key) {
+        if constexpr (std::is_same<A, B>::value) {
+            return mapByA.find(key) != mapByA.end() || mapByB.find(key) != mapByB.end();
+        } else if constexpr (std::is_same<T, A>::value) {
+            return mapByA.find(key) != mapByA.end();
+        } else if constexpr (std::is_same<T, B>::value) {
+            return mapByB.find(key) != mapByB.end();
+        } else {
+            static_assert(always_false<T>::value, "invalid type");
+        }
+    }
+
 };
 
 }
